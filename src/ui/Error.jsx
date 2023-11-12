@@ -1,6 +1,6 @@
 import { useNavigate, useRouteError } from 'react-router-dom';
 
-function NotFound() {
+function Error() {
   const navigate = useNavigate();
   const error = useRouteError()
   console.log(error)
@@ -14,4 +14,4 @@ function NotFound() {
   );
 }
 
-export default NotFound;
+export default Error;
