@@ -1,12 +1,12 @@
 // import { useState } from "react";
-import { Form, redirect } from "react-router-dom";
+import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
 import { createOrder } from "../../services/apiRestaurant";
 
 // https://uibakery.io/regex-library/phone-number
-// const isValidPhone = (str) =>
-//   /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/.test(
-//     str
-//   );
+const isValidPhone = (str) =>
+  /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/.test(
+    str
+  );
 
 const fakeCart = [
   {
@@ -36,6 +36,13 @@ function CreateOrder() {
   // const [withPriority, setWithPriority] = useState(false);
   const cart = fakeCart;
 
+  const navigation = useNavigation()
+  const  isLoading = navigation.state === "submitting";
+  // console.log(isLoading)
+
+  const formErrors = useActionData();
+  console.log(formErrors)
+
   return (
     <div>
       <h2>Ready to order? Lets go!</h2>
@@ -52,6 +59,7 @@ function CreateOrder() {
           <label>Phone number</label>
           <div>
             <input type="tel" name="phone" required />
+            {formErrors?.phone && <p className="text-red-500">{formErrors.phone}</p>}
           </div>
         </div>
 
@@ -74,9 +82,12 @@ function CreateOrder() {
         </div>
 
         <div>
-          <button className="font-semibold rounded-full tracking-wide bg-yellow-400 hover:bg-yellow-300 transition-colors duration-300 focus:bg-yellow-300 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 uppercase text-stone-800 py-3 px-4 disabled:cursor-not-allowed">Order now</button>
+          <button disabled={isLoading} className="font-semibold rounded-full tracking-wide bg-yellow-400 hover:bg-yellow-300 transition-colors duration-300 focus:bg-yellow-300 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 uppercase text-stone-800 py-3 px-4 disabled:cursor-not-allowed">
+            {isLoading ? "Placing Order..." : "Order now"}
+          </button>
         </div>
 
+        {/*REVIEW - in order the send the cart to the action */}
         <input type="hidden" name="cart" value={JSON.stringify(cart)}/>
       </Form>
     </div>
@@ -87,7 +98,7 @@ export async function action({ request }) {
   //REVIEW - formData is a web API provided by the browser 
   const formData = await request.formData()
   const data = Object.fromEntries(formData)
-  // console.log(data)
+  console.log(data)
 
   const order = {
     ...data,
@@ -96,6 +107,13 @@ export async function action({ request }) {
   }
   console.log(order)
 
+  const errors = {};
+  if ( !isValidPhone(order.phone) ) 
+    errors.phone = "*Please give us your correct phone number. We might need it to call you.";
+  
+  if (Object.keys(errors).length > 0) return errors;
+
+  //NOTE - If everything is Okay, create new order and redirect.
   const newOrder = await createOrder(order)
   console.log(newOrder)
 
