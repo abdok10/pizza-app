@@ -1,6 +1,7 @@
 // import { useState } from "react";
 import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
 import { createOrder } from "../../services/apiRestaurant";
+import Button from "../../ui/Button";
 
 // https://uibakery.io/regex-library/phone-number
 const isValidPhone = (str) =>
@@ -37,54 +38,55 @@ function CreateOrder() {
   const cart = fakeCart;
 
   const navigation = useNavigation()
-  const  isLoading = navigation.state === "submitting";
-  // console.log(isLoading)
+  const  isSubmitting = navigation.state === "submitting";
+  // console.log(isSubmitting)
 
   const formErrors = useActionData();
   console.log(formErrors)
 
   return (
-    <div>
-      <h2>Ready to order? Lets go!</h2>
+    <div className="px-4 py-6">
+      <h2 className="text-xl font-semibold mb-8">Ready to order? Lets go!</h2>
 
       {/* NOTE - both ways are correct (in form tag) */}
       {/* <Form method="POST" action="order/new"> */}
       <Form method="POST">
-        <div>
-          <label>First Name</label>
-          <input type="text" name="customer" required />
+        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:justify-between   sm:items-center">
+          <label className="sm:basis-40">First Name</label>
+          <input type="text" name="customer" required className="input grow"/>
         </div>
 
-        <div>
-          <label>Phone number</label>
-          <div>
-            <input type="tel" name="phone" required />
-            {formErrors?.phone && <p className="text-red-500">{formErrors.phone}</p>}
+        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
+          <label className="sm:basis-40">Phone number</label>
+          <div className="grow">
+            <input type="tel" name="phone" required className="input w-full"/>
+            {formErrors?.phone && <p className="mt-2 p-2 rounded-md text-xs bg-red-100 text-red-700 p">{formErrors.phone}</p>}
           </div>
         </div>
 
-        <div>
-          <label>Address</label>
-          <div>
-            <input type="text" name="address" required />
+        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
+          <label className="sm:basis-40">Address</label>
+          <div className="grow">
+            <input type="text" name="address" required className="input w-full"/>
           </div>
         </div>
 
-        <div>
+        <div className="mb-12 flex gap-5 items-center">
           <input
             type="checkbox"
             name="priority"
             id="priority"
+            className="h-5 w-5 accent-yellow-400 focus:outline-none focus:ring focus:ring-yellow-400 focus:ring-offset-2"
             // value={withPriority}
             // onChange={(e) => setWithPriority(e.target.checked)}
           />
-          <label htmlFor="priority">Want to yo give your order priority?</label>
+          <label className="font-medium" htmlFor="priority">Want to yo give your order priority?</label>
         </div>
 
         <div>
-          <button disabled={isLoading} className="font-semibold rounded-full tracking-wide bg-yellow-400 hover:bg-yellow-300 transition-colors duration-300 focus:bg-yellow-300 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 uppercase text-stone-800 py-3 px-4 disabled:cursor-not-allowed">
-            {isLoading ? "Placing Order..." : "Order now"}
-          </button>
+          <Button type="primary" disabled={isSubmitting}>
+            {isSubmitting ? "Placing Order..." : "Order now"}
+          </Button>
         </div>
 
         {/*REVIEW - in order the send the cart to the action */}
