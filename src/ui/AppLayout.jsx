@@ -5,7 +5,7 @@ import Loader from "./Loader"
 
 function AppLayout() {
     const navigation = useNavigation()
-    console.log(navigation)
+    // console.log(navigation)
     //REVIEW - navigation.state could be ('idle', 'submitting', 'loading')
     const isLoading = navigation.state === 'loading';
     return (
